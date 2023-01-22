@@ -1,0 +1,63 @@
+@import '~@comtstore/su-ui/dist/assets/styles/global.scss';
+@import '~@comtstore/su-ui/dist/assets/styles/globalVariables.scss';
+
+.su-login-card {
+   box-sizing: border-box;
+   padding: 20px;
+   position: relative;
+
+   .su-login-close-button {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+   }
+}
+
+.su-login-close-button-icon {
+    color: $tc4;
+    &:hover {
+        color: $themeColor;
+    }
+}
+
+.su-login-tabs {
+    margin-bottom: 10px;
+    .MuiTabs-root{
+        .MuiTabs-indicator{
+            background-color: $themeColor;
+        }
+    }
+}
+
+.su-login-tab-selected {
+    color: $themeColor !important;
+}
+
+.su-login-item { 
+    margin-bottom: 10px !important;
+    width: 100%;
+    @include flex(row, flex-start, flex-start);
+
+    .su-icon {
+        margin-top: 33px;
+    }
+}
+
+.su-login-form{
+    width: 300px;
+    margin-bottom: 20px;
+   @include flex(column, flex-start, flex-end);
+}
+
+.su-login-button-group {
+    width: 100%;
+    margin-top: 20px;
+    @include flex(row, flex-start, center);
+}
+
+.su-captcha-picture{
+    cursor: pointer;
+    height: 24px;
+    position: relative;
+    top: -16px;
+}
