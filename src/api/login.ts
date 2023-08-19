@@ -1,9 +1,34 @@
 import AxiosRequest from '@comtstore/axios'
+import StorageCenter from '@comtstore/storage'
 import { isDev, baseUrl } from '../config'
 
-const axios = new AxiosRequest({
-  baseUrl: isDev? baseUrl.dev : baseUrl.pro
+export const stroageKey = `login-client/login-server-base-url`
+
+export const getDefualtAxiosBaseUrl = () => {
+  return isDev? baseUrl.dev : baseUrl.pro
+}
+
+const getInitialAxiosBaseUrl = (): string => {
+  let _baseUrl = getDefualtAxiosBaseUrl()
+  const baseUrlInStorage = StorageCenter.getInstance().getLocalSItem(stroageKey)
+  if(baseUrlInStorage){
+      _baseUrl = baseUrlInStorage
+  }
+  return _baseUrl
+}
+
+export const axios = new AxiosRequest({
+  baseUrl: getInitialAxiosBaseUrl()
 })
+
+export const setAxiosBaseUrl = (baseUrl: string) => {
+  axios.baseUrl = baseUrl
+  StorageCenter.getInstance().setLocalSItem(stroageKey, baseUrl)
+}
+
+export const getAxiosBaseUrl = (): string => {
+  return axios.baseUrl
+}
 
 class LoginRequest {
   /**

@@ -5,6 +5,7 @@ import LoginManager from './managers/loginManager'
 import LanguageManager from './managers/languageManager'
 import { action, configure, makeObservable, observable } from 'mobx';
 import StorageCenter from '@comtstore/storage';
+import { setAxiosBaseUrl, getAxiosBaseUrl, getDefualtAxiosBaseUrl } from './api/login'
 
 configure({
   enforceActions: 'never'
@@ -64,6 +65,8 @@ class LoginService {
 
     public logout = () => {
       this.isLogin = false
+      this.token = '' // 清除token
+      this.userInfo = {} // 清除用户信息
       this.storageCenter.clearLocalSItem('token')
       this.storageCenter.clearLocalSItem('userInfo')
     }
@@ -79,6 +82,12 @@ class LoginService {
           this.isLogin = false
       }
     }
+
+    public setAxiosBaseUrl = setAxiosBaseUrl
+
+    public getAxiosBaseUrl = getAxiosBaseUrl
+
+    public getDefualtAxiosBaseUrl = getDefualtAxiosBaseUrl
 
     /**
      * 设置监听对象
