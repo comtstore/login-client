@@ -3,15 +3,16 @@ import ReactDOM from 'react-dom';
 import LoginComponent from './login'
 import LoginManager from './managers/loginManager'
 import LanguageManager from './managers/languageManager'
-import { action, configure, makeObservable, observable } from 'mobx';
+import { action, configure, makeObservable, observable, reaction } from '@comtstore/mobx';
 import StorageCenter from '@comtstore/storage';
 import { setAxiosBaseUrl, getAxiosBaseUrl, getDefualtAxiosBaseUrl } from './api/login'
+import EventEmitter from '@comtstore/event-emitter';
 
 configure({
   enforceActions: 'never'
 })
 
-class LoginService {
+class LoginService extends EventEmitter {
     public static instance: LoginService
 
     public static getInstance(): LoginService {
@@ -22,12 +23,16 @@ class LoginService {
     }
 
     constructor(){
+        super()
         makeObservable(this)
+        reaction(() => this.isLogin, (newValue) => {
+          this.emit(newValue ? 'login' : 'logout')
+        })
         this.storageCenter = StorageCenter.getInstance()
         this.getLocalClientData()
         this.loginManager = LoginManager.getInstance()
         this.languageManager = LanguageManager.getInstance()
-        this.loginManager.onLoginSuccess = this.onLoginSuccess
+        this.loginManager.on('login-success', this.onLoginSuccess)
     }
 
     private loginManager: LoginManager
@@ -52,6 +57,24 @@ class LoginService {
 
     @observable
     public token: string
+
+    /**
+     * 当已登录时执行
+     * @param cb
+     */
+    public exeIfLogin = (cb: () => void) => {
+      if(this.isLogin){ cb() }
+      this.on('login', cb)
+    }
+
+    /**
+     * 当没有登录时执行
+     * @param cb
+     */
+    public exeIfLogout = (cb: () => void) => {
+      if(!this.isLogin){ cb() }
+      this.on('logout', cb)
+    }
 
     @action
     public onLoginSuccess = (data: {
@@ -141,7 +164,7 @@ class LoginService {
      */
     public hide(){
       this.loginManager.isOpen = false
-  }
+    }
 }
 
 export default LoginService

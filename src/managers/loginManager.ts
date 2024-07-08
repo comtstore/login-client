@@ -1,11 +1,12 @@
-import { action, computed, makeObservable, observable, reaction } from 'mobx'
+import { action, computed, makeObservable, observable, reaction } from '@comtstore/mobx'
 import LanguageManager from './languageManager'
 import LoginRequest from '../api/login'
 import getFingerPrint from '../utils/fingerprint'
 import { SnackBar } from '@comtstore/su-ui';
 import StorageCenter from '@comtstore/storage'
+import EventEmitter from '@comtstore/event-emitter'
 
-class LoginManager {
+class LoginManager extends EventEmitter {
     public static instance: LoginManager
 
     public static getInstance(): LoginManager {
@@ -16,6 +17,7 @@ class LoginManager {
     }
 
     constructor(){
+        super()
         makeObservable(this)
         this.languageManager = LanguageManager.getInstance()
         this.storageCenter = StorageCenter.getInstance()
@@ -62,13 +64,6 @@ class LoginManager {
         }
     }
 
-    // eslint-disable-next-line no-unused-vars
-    public onLoginSuccess: (data: {
-        token: string,
-        expires: string,
-        userInfo: { [key: string]: any }
-      }) => void
-
     public login = () => {
         if(!this.isValid) return
         if (this.isLoginRequesting) { return }
@@ -101,11 +96,11 @@ class LoginManager {
                 // 设置localstorage token信息
                 this.storageCenter.setLocalSItem('token', res.token, res.expires)
                 this.storageCenter.setLocalSItem('userInfo', res.data)
-                this.onLoginSuccess({
+                this.emit('login-succuss', [{
                     token: res.token,
                     expires: res.expires,
                     userInfo: res.data
-                })
+                }])
                 this.isOpen = false
             }else{
                 return Promise.reject(res)
